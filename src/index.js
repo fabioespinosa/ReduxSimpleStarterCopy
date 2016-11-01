@@ -1,22 +1,38 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, compose } from 'redux';
-import reduxThunk from 'redux-thunk';
+import YTSearch from 'youtube-api-search';
 
-import App from './components/app';
-import reducers from './reducers';
+import SearchBar from './components/search_bar';
 
-const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
+const API_KEY = 'AIzaSyAaiFlMeN7vhtZXuisgTL4qccXamWYb38U';
 
-const enhancers = compose(
-  window.devToolsExtension? window.devToolsExtension(): f=> f
-);
+class App extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      videos: [],
+      selectedVideo: null
+    }
+  }
+  
+  videoSearch(term){
+    YTSearch({key:API_KEY, term: term}, function(videos) {
+      this.setState({
+        videos: videos,
+        selectedVideo: videos[0]
+      });
+    })
+  }
+  
+  
+  render(){
+    return (
+      <div>
+        <SearchBar />
+      </div>
+    );
+  }
+}
 
-const defaultState = {};
 
-ReactDOM.render(
-  <Provider store={createStoreWithMiddleware(reducers, defaultState, enhancers)}>
-    <App />
-  </Provider>
-  , document.querySelector('.container'));
+ReactDOM.render(<App />, document.querySelector('.container'));
